@@ -1,29 +1,45 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
-
-Vue.use(VueRouter)
+import Vue from "vue";
+import VueRouter from "vue-router";
+// 重写 VueRouter的push方法
+const originalPush = VueRouter.prototype.push;
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch((err) => err);
+};
+Vue.use(VueRouter);
 
 const routes = [
   {
-    path: '/',
-    name: 'Home',
-    component: Home
+    path: "",
+    redirect: "/home",
+    // 重定向路由
   },
   {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  }
-]
+    path: "/home",
+    name: "Home",
+    component: () => import("views/home/Home.vue"),
+    // 路由必须一一对应
+  },
+  {
+    path: "/category",
+    name: "Category",
+    component: () => import("views/category/Category.vue"),
+  },
+  {
+    path: "/cart",
+    name: "Cart",
+    component: () => import("views/cart/Cart.vue"),
+  },
+  {
+    path: "/profile",
+    name: "Profile",
+    component: () => import("views/profile/Profile.vue"),
+  },
+];
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: "history",
   base: process.env.BASE_URL,
-  routes
-})
+  routes,
+});
 
-export default router
+export default router;
