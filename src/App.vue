@@ -1,5 +1,7 @@
 <template>
   <div id="app">
+    <!-- 路由出口 -->
+    <!-- 路由匹配到的组件将渲染在这里 -->
     <router-view></router-view>
     <main-tab-bar></main-tab-bar>
   </div>
@@ -24,6 +26,5 @@ export default {
 </script>
 
 <style scoped>
-/* @import "assets/css/base.css"; */
 @import url("./assets/css/base.css");
 </style>
