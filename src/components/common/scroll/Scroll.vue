@@ -29,7 +29,7 @@ export default {
       type: Number,
       default: 0,
     },
-    pullup: {
+    pullUp: {
       type: Boolean,
       default: true,
     },
@@ -42,7 +42,7 @@ export default {
       scrollY: true,
       click: true,
       probeType: this.probeType,
-      pullUpLoad: this.pullup,
+      pullUpLoad: this.pullUp,
       observeImage: {
         debounceTime: 100, // ms  当图片加载失败100ms后调用refresh方法 重新计算可滚动的高度或者宽度
       },
@@ -53,11 +53,13 @@ export default {
     });
 
     // 监听上拉加载事件
-    this.bs.on("pullingUp", () => {
-      this.$emit("pullingup");
-      // 2.x版本改版只能在 上拉事件触发以后调用finishPullUp()方法
-      this.bs.finishPullUp();
-    });
+    if (this.pullUp) {
+      this.bs.on("pullingUp", () => {
+        this.$emit("pullingup");
+        // 2.x版本改版只能在 上拉事件触发以后调用finishPullUp()方法
+        this.bs.finishPullUp();
+      });
+    }
   },
 
   methods: {
@@ -68,8 +70,13 @@ export default {
       this.bs.finishPullUp();
     },
     refresh() {
-      this.bs && this.bs.refresh();
-      console.log("---");
+      // this.bs && this.bs.refresh();
+      this.bs.refresh();
+      // console.log("---");
+    },
+    // 监听y轴位置
+    getScrollY() {
+      return this.bs ? this.bs.y : 0;
     },
   },
   computes: {},

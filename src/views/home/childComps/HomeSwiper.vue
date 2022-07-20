@@ -2,7 +2,9 @@
   <div>
     <swiper>
       <swiper-item v-for="item in banners" :key="item.acm">
-        <a :href="item.link"> <img :src="item.image" alt="" /></a>
+        <a :href="item.link">
+          <img :src="item.image" alt="" @load="imgload"
+        /></a>
       </swiper-item>
     </swiper>
   </div>
@@ -14,7 +16,9 @@ export default {
   name: "CoderwhyVueHomeSwiper",
 
   data() {
-    return {};
+    return {
+      flag: true,
+    };
   },
   props: {
     banners: {
@@ -27,7 +31,14 @@ export default {
 
   mounted() {},
 
-  methods: {},
+  methods: {
+    imgload() {
+      if (this.flag) {
+        this.$emit("imgload");
+      }
+      this.flag = false;
+    },
+  },
   components: {
     Swiper,
     SwiperItem,

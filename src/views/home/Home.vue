@@ -6,19 +6,28 @@
         <div>购物街</div>
       </template>
     </nav-bar>
+    <!-- 偷天换日大法 -->
+    <tab-control
+      :titles="['流行', '新款', '精选']"
+      class="tab-control"
+      @itemclick="tabclick"
+      ref="tabcontrol2"
+      :class="{ tabcontrol: istabfixed }"
+      v-show="istabfixed"
+    ></tab-control>
     <!-- 回到顶部按钮 -->
     <BackTop @click.native="backtopclick()" v-show="backshow"></BackTop>
-    <!--  -->
+    <!-- better-scroll插件 -->
     <scroll
       class="content"
       ref="scroll"
       :probe-type="3"
       @scroll="scrollp"
-      :pullup="true"
+      :pull-up="true"
       @pullingup="pullupload"
     >
       <!-- 轮播图 -->
-      <home-swiper :banners="banners"></home-swiper>
+      <home-swiper :banners="banners" @imgload="imgloaded"></home-swiper>
       <recommend-view :recommends="recommends"></recommend-view>
       <!-- 流行列表 -->
       <feature-view :goods="goods"></feature-view>
@@ -28,6 +37,7 @@
         :titles="['流行', '新款', '精选']"
         class="tab-control"
         @itemclick="tabclick"
+        ref="tabcontrol"
       ></tab-control>
 
       <!-- 商品列表 -->
@@ -42,12 +52,14 @@ import TabControl from "components/context/TabControl/TabControl";
 import GoodsList from "components/context/GoodsList/GoodsList.vue";
 import Scroll from "components/common/scroll/Scroll";
 import BackTop from "components/context/BackTop/BackTop";
+import { debounce } from "common/utils/utils.js";
 
 import HomeSwiper from "./childComps/HomeSwiper";
 import RecommendView from "./childComps/RecommendView";
 import FeatureView from "./childComps/FeatureView";
 
 import { getHomeMultidata, getHomeGoods } from "network/home.js";
+import { imgLoadListenerMixin } from "common/utils/mixins";
 
 export default {
   name: "Home",
@@ -63,18 +75,27 @@ export default {
       },
       currenttype: "pop",
       backshow: false,
+      taboffsettop: 0,
+      istabfixed: false,
+      positiony: 0,
+      imgLoadListener: null,
     };
   },
+  mixins: [imgLoadListenerMixin],
 
   mounted() {
-    const refresh = this.debounce(this.$refs.scroll.refresh);
+    /*  const refresh = debounce(this.$refs.scroll.refresh, 30);
 
-    // // 事件总线监听图片加载
-    this.$bus.$on("itemImageLoad", () => {
-      // console.log("---");
-      // this.$refs.scroll && this.$refs.scroll.refresh();
+    this.imgLoadListener = () => {
       refresh();
-    });
+    };
+    // // 事件总线监听图片加载
+    this.$bus.$on("itemImageLoad", this.imgLoadListener);
+ */
+  },
+  updated() {
+    // this.$refs.tabcontrol.$el.offsetTop;
+    // console.log(this);
   },
   computed: {
     showgoods() {
@@ -96,6 +117,8 @@ export default {
           this.currenttype = "sell";
           break;
       }
+      this.$refs.tabcontrol2.currentIndex = index;
+      this.$refs.tabcontrol.currentIndex = index;
     },
     backtopclick() {
       this.$refs.scroll.scrollto(0, 0, 500);
@@ -105,22 +128,20 @@ export default {
     scrollp(position) {
       // console.log(position);
       this.backshow = Math.abs(position.y) > 1000;
+      // 判断分类栏是否吸顶
+      this.istabfixed = Math.abs(position.y) > this.taboffsettop;
     },
     // 上拉加载更多
     pullupload() {
-      // this.getHomeGoods(this.currenttype);
+      this.getHomeGoods(this.currenttype);
       // 监听图片加载玩重新（刷新）计算展示高度
       // this.$refs.scroll.bs.refresh();
+      debounce(this.$refs.scroll.refresh, 30)();
     },
-    // debounce节流函数
-    debounce(func, delay) {
-      let timer = null;
-      return function (...args) {
-        if (timer) clearTimeout(timer);
-        timer = setTimeout(() => {
-          func.apply(this, args);
-        }, delay);
-      };
+    // 等待轮播图加载完成去offsettop的值
+    imgloaded() {
+      this.taboffsettop = this.$refs.tabcontrol.$el.offsetTop;
+      // console.log(this.$refs.tabcontrol.$el.offsetTop);
     },
 
     //网络请求相关函数
@@ -164,9 +185,21 @@ export default {
     this.getHomeGoods("new");
     this.getHomeGoods("sell");
   },
-  beforeDestroy() {
-    this.$refs.scroll.bs.destroy();
-    this.$bus.$off("itemImageLoad");
+  beforeDestroy() {},
+  activated() {
+    this.$refs.scroll.scrollto(0, this.positiony);
+    this.$refs.scroll.refresh();
+    // console.log(this.positiony);
+  },
+  deactivated() {
+    // 监听滚动的Y值
+    this.positiony = this.$refs.scroll.getScrollY();
+    this.$refs.scroll.refresh();
+    // console.log(this.positiony);
+    // 卸载滚动事件
+    // this.$refs.scroll.bs.destroy();
+    // 卸载事件总线（在离开首页时首页触发deactivated钩子函数）
+    this.$bus.$off("itemImageLoad", this.imgLoadListener);
   },
 };
 </script>
@@ -181,16 +214,17 @@ export default {
 .home-nav {
   background-color: var(--color-tint);
   color: #fff;
-  position: fixed;
-  left: 0;
+  position: relative;
+  /* left: 0;
   right: 0;
-  top: 0;
+  top: 0;  */
+  z-index: 11;
+}
+.tabcontrol {
+  position: relative;
   z-index: 10;
 }
-.tab-control {
-  position: sticky;
-  top: 43px;
-}
+
 .content {
   position: absolute;
   /* overflow: hidden; */
