@@ -1,5 +1,5 @@
 import { debounce } from "./utils.js";
-// import BackTop from "components/content/BackTop";
+import BackTop from "components/context/BackTop/BackTop";
 
 export const imgLoadListenerMixin = {
   data() {
@@ -17,18 +17,18 @@ export const imgLoadListenerMixin = {
   },
 };
 
-// export const backTopMixin = {
-//   data() {
-//     return {
-//       currentScroll: false, //返回顶部按钮是否显示
-//     };
-//   },
-//   components: {
-//     BackTop,
-//   },
-//   methods: {
-//     backClick() {
-//       this.$refs.scroll.scrollTo(0, 0, 500);
-//     },
-//   },
-// };
+export const backTopMixin = {
+  data() {
+    return {
+      currentScroll: false, //返回顶部按钮是否显示
+    };
+  },
+  components: {
+    BackTop,
+  },
+  methods: {
+    backClick() {
+      this.$refs.scroll.scrollto(0, 0, 500);
+    },
+  },
+};

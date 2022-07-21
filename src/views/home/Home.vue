@@ -15,8 +15,6 @@
       :class="{ tabcontrol: istabfixed }"
       v-show="istabfixed"
     ></tab-control>
-    <!-- 回到顶部按钮 -->
-    <BackTop @click.native="backtopclick()" v-show="backshow"></BackTop>
     <!-- better-scroll插件 -->
     <scroll
       class="content"
@@ -43,6 +41,8 @@
       <!-- 商品列表 -->
       <goods-list :goods="showgoods"></goods-list>
     </scroll>
+    <!-- 回到顶部按钮 -->
+    <BackTop @click.native="backClick()" v-show="currentScroll"></BackTop>
   </div>
 </template>
 
@@ -59,7 +59,7 @@ import RecommendView from "./childComps/RecommendView";
 import FeatureView from "./childComps/FeatureView";
 
 import { getHomeMultidata, getHomeGoods } from "network/home.js";
-import { imgLoadListenerMixin } from "common/utils/mixins";
+import { imgLoadListenerMixin, backTopMixin } from "common/utils/mixins";
 
 export default {
   name: "Home",
@@ -74,14 +74,13 @@ export default {
         sell: { page: 0, list: [] },
       },
       currenttype: "pop",
-      backshow: false,
       taboffsettop: 0,
       istabfixed: false,
       positiony: 0,
       imgLoadListener: null,
     };
   },
-  mixins: [imgLoadListenerMixin],
+  mixins: [imgLoadListenerMixin, backTopMixin],
 
   mounted() {
     /*  const refresh = debounce(this.$refs.scroll.refresh, 30);
@@ -120,14 +119,10 @@ export default {
       this.$refs.tabcontrol2.currentIndex = index;
       this.$refs.tabcontrol.currentIndex = index;
     },
-    backtopclick() {
-      this.$refs.scroll.scrollto(0, 0, 500);
-      // console.log(this.$refs.scroll.bs);
-    },
     // 判断返回顶部按钮的实现
     scrollp(position) {
       // console.log(position);
-      this.backshow = Math.abs(position.y) > 1000;
+      this.currentScroll = Math.abs(position.y) > 1000;
       // 判断分类栏是否吸顶
       this.istabfixed = Math.abs(position.y) > this.taboffsettop;
     },

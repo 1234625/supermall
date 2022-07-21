@@ -1,12 +1,17 @@
 <template>
   <div id="detail">
-    <detail-nav-bar class="detailnav"></detail-nav-bar>
+    <detail-nav-bar
+      class="detailnav"
+      @tieleitemclick="itemclick"
+      ref="navbar"
+    ></detail-nav-bar>
     <scroll
       class="content"
       :probe-type="3"
       :pull-up="false"
       @pullingup="pullupload"
       ref="scroll"
+      @scroll="contentscroll"
     >
       <!-- 轮播图 -->
       <detail-swiper :top-image="topImages"></detail-swiper>
@@ -20,12 +25,21 @@
         @imgLoad="imageload"
       ></detail-goods-info>
       <!-- 商品尺码参数 -->
-      <goods-params :goodparam="goodsparams"></goods-params>
+      <goods-params :goodparam="goodsparams" ref="param"></goods-params>
       <!-- 商品评论信息 -->
-      <detail-comment-info :commentInfo="commentInfo"></detail-comment-info>
+      <detail-comment-info
+        :commentInfo="commentInfo"
+        ref="comment"
+      ></detail-comment-info>
       <!-- 推荐数据的展示 -->
-      <goods-list :goods="recommends.list"></goods-list>
+      <goods-list :goods="recommends.list" ref="recommend"></goods-list>
     </scroll>
+    <detail-bottom-bar></detail-bottom-bar>
+    <back-top
+      v-show="currentScroll"
+      @click.native="backClick"
+      class="backtop"
+    ></back-top>
   </div>
 </template>
 
@@ -37,6 +51,7 @@ import DetailShopsInfo from "./childCompos/DetailShopsInfo.vue";
 import DetailGoodsInfo from "./childCompos/DetailGoodsInfo.vue";
 import GoodsParams from "./childCompos/DetailParamInfo.vue";
 import DetailCommentInfo from "./childCompos/DetailCommentInfo.vue";
+import DetailBottomBar from "./childCompos/DetailBottomBar.vue";
 
 /* 导入获取到的数据 */
 import {
@@ -49,7 +64,8 @@ import {
 /* 导入公共组件 */
 import Scroll from "components/common/scroll/Scroll";
 import GoodsList from "components/context/GoodsList/GoodsList";
-import { imgLoadListenerMixin } from "common/utils/mixins";
+import { imgLoadListenerMixin, backTopMixin } from "common/utils/mixins";
+import { debounce } from "common/utils/utils";
 export default {
   name: "Detail",
 
@@ -63,36 +79,68 @@ export default {
       goodsparams: {}, //商品尺码参数
       commentInfo: {}, // 评论信息
       recommends: [], //推荐商品信息
-
-      // itemimgload: null,
+      themeTopYs: [], //头标题离各个板块的高度
+      getThemTop: null,
+      currentIndex: 0,
     };
   },
-  mixins: [imgLoadListenerMixin],
+  mixins: [imgLoadListenerMixin, backTopMixin],
   mounted() {
+    // 混入内容
     /* this.itemimgload = () => {
       this.$refs.scroll.bs.refresh;
     };
-
     this.$bus.$on("itemImgLoad", this.itemimgload); */
   },
 
   methods: {
-    pullupload() {
-      // console.log(this.detailInfo);
-    },
+    pullupload() {},
+    // 图片等待加载
     imageload() {
-      // console.log("---");
-      // console.log();
       this.$refs.scroll.refresh();
+      this.getThemTop();
+    },
+    // 标题点击事件
+    itemclick(index) {
+      // console.log(index);
+      this.$refs.scroll.scrollto(0, -this.themeTopYs[index], 500);
+    },
+    // 监听滚动事件 使标题和板块相对应
+    contentscroll(position) {
+      // const positionY = -position.y;
+
+      /*       for (let i = 0; i < this.themeTopYs.length; i++) {
+        if (
+          this.currentIndex !== i &&
+          ((i < this.themeTopYs.length - 1 &&
+            positionY >= this.themeTopYs[i] &&
+            positionY < this.themeTopYs[i + 1]) ||
+            (i === this.themeTopYs.length && positionY >= this.themeTopYs[i]))
+        ) {
+          this.currentIndex = i;
+          console.log(this.currentIndex);
+        }
+      } */
+      this.currentScroll = -position.y > 1000;
+      let positionY = -position.y;
+      for (let i = 0; i < this.themeTopYs.length - 1; i++) {
+        if (
+          this.currentIndex != i &&
+          positionY >= this.themeTopYs[i] - 88 &&
+          positionY < this.themeTopYs[i + 1]
+        ) {
+          this.currentIndex = i;
+        }
+        this.$refs.navbar.currentindex = this.currentIndex;
+      }
     },
   },
   created() {
-    // console.log(this.$route.params);
     this.iid = this.$route.params.iid;
 
     // 获取数据
     getdetaildata(this.iid).then((res) => {
-      console.log(res);
+      // console.log(res);
       const data = res.result;
 
       // 获取顶部轮播图
@@ -104,6 +152,17 @@ export default {
         data.columns,
         data.shopInfo.services
       );
+
+      /* 获取板块高度 */
+      this.getThemTop = debounce(() => {
+        this.themeTopYs = [];
+        this.themeTopYs.push(0);
+        this.themeTopYs.push(Math.abs(this.$refs.param.$el.offsetTop + 44));
+        this.themeTopYs.push(Math.abs(this.$refs.comment.$el.offsetTop + 44));
+        this.themeTopYs.push(Math.abs(this.$refs.recommend.$el.offsetTop + 44));
+        this.themeTopYs.push(Number.MAX_VALUE);
+        // console.log(this.themeTopYs);
+      });
 
       /**店家信息 */
       this.shops = new Shops(data.shopInfo);
@@ -127,6 +186,8 @@ export default {
       this.recommends = res.data;
     });
   },
+  updated() {},
+
   destrocy() {
     this.$bus.$on("itemImgLoad", this.itemimgload);
   },
@@ -138,6 +199,7 @@ export default {
     DetailGoodsInfo,
     GoodsParams,
     DetailCommentInfo,
+    DetailBottomBar,
 
     Scroll,
     GoodsList,
@@ -158,6 +220,9 @@ export default {
   background-color: #fff;
 }
 .content {
-  height: calc(100% - 43px);
+  height: calc(100% - 43px - 49px);
+}
+.backtop {
+  position: absolute;
 }
 </style>
