@@ -1,53 +1,53 @@
-import Vue from "vue";
-import VueRouter from "vue-router";
+import Vue from 'vue'
+import VueRouter from 'vue-router'
 // 重写 VueRouter的push方法
-const originalPush = VueRouter.prototype.push;
+const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
-  return originalPush.call(this, location).catch((err) => err);
-};
+  return originalPush.call(this, location).catch((err) => err)
+}
 
 // VueRouter.prototype.push.call(this.location).catch((err) => err);
 
-Vue.use(VueRouter);
+Vue.use(VueRouter)
 
 const routes = [
   {
-    path: "",
-    redirect: "/home",
+    path: '',
+    redirect: '/home'
     // 重定向路由
   },
   {
-    path: "/home",
-    name: "Home",
-    component: () => import("views/home/Home.vue"),
+    path: '/home',
+    name: 'Home',
+    component: () => import('views/home/Home.vue')
     // 路由必须一一对应
   },
   {
-    path: "/category",
-    name: "Category",
-    component: () => import("views/category/Category.vue"),
+    path: '/category',
+    name: 'Category',
+    component: () => import('views/category/Category.vue')
   },
   {
-    path: "/cart",
-    name: "Cart",
-    component: () => import("views/cart/Cart.vue"),
+    path: '/cart',
+    name: 'Cart',
+    component: () => import('views/cart/Cart.vue')
   },
   {
-    path: "/profile",
-    name: "Profile",
-    component: () => import("views/profile/Profile.vue"),
+    path: '/profile',
+    name: 'Profile',
+    component: () => import('views/profile/Profile.vue')
   },
   {
-    path: "/detail/:iid",
-    name: "Detail",
-    component: () => import("views/detail/Detail"),
-  },
-];
+    path: '/detail/:iid',
+    name: 'Detail',
+    component: () => import('views/detail/Detail')
+  }
+]
 
 const router = new VueRouter({
-  mode: "history",
+  mode: 'history',
   base: process.env.BASE_URL,
-  routes,
-});
+  routes
+})
 
-export default router;
+export default router

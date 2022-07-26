@@ -1,6 +1,6 @@
 <template>
   <div class="goods-item">
-    <img :src="showimage" alt="" @load="imgload" @click="todetail" />
+    <img v-lazy="showimage" alt="" @load="imgload" @click="todetail" />
     <div class="goods-info">
       <p>{{ goodsitem.title }}</p>
       <span class="price">{{ goodsitem.price }}</span>
@@ -11,18 +11,18 @@
 
 <script>
 export default {
-  name: "GoodsListItem",
+  name: 'GoodsListItem',
 
   data() {
-    return {};
+    return {}
   },
   props: {
     goodsitem: {
       type: Object,
       default() {
-        return {};
-      },
-    },
+        return {}
+      }
+    }
   },
 
   mounted() {},
@@ -30,8 +30,8 @@ export default {
     showimage() {
       return (
         (this.goodsitem.show && this.goodsitem.show.img) || this.goodsitem.image
-      );
-    },
+      )
+    }
   },
 
   methods: {
@@ -42,17 +42,17 @@ export default {
       } else if(this.$route.path.indexOf('/detail')){
         this.$bus.$emit('detailItemImgLoad')
       } */
-      this.$bus.$emit("itemImageLoad");
+      this.$bus.$emit('itemImageLoad')
     },
 
     // 图片点击进入详情页
     todetail() {
-      // console.log(this.goodsitem.iid);
-      this.$router.push(`/detail/${this.goodsitem.iid}`);
-    },
+      console.log(this.goodsitem)
+      this.$router.push(`/detail/${this.goodsitem.iid}`)
+    }
   },
-  create() {},
-};
+  create() {}
+}
 </script>
 
 <style scoped>
@@ -95,12 +95,12 @@ export default {
 }
 
 .goods-info .collect::before {
-  content: "";
+  content: '';
   position: absolute;
   left: -15px;
   top: -1px;
   width: 14px;
   height: 14px;
-  background: url("~assets/img/common/collect.svg") 0 0/14px 14px;
+  background: url('~assets/img/common/collect.svg') 0 0/14px 14px;
 }
 </style>

@@ -11,24 +11,24 @@
 
 <script>
 export default {
-  name: "CoderwhyVueRecommendView",
+  name: 'CoderwhyVueRecommendView',
 
   data() {
-    return {};
+    return {}
   },
   props: {
     recommends: {
       type: Array,
       default() {
-        return [];
-      },
-    },
+        return []
+      }
+    }
   },
 
   mounted() {},
 
-  methods: {},
-};
+  methods: {}
+}
 </script>
 
 <style scoped>

@@ -5,28 +5,28 @@
     <keep-alive exclude="Detail">
       <router-view></router-view>
     </keep-alive>
-    <main-tab-bar></main-tab-bar>
+    <main-tab-bar class="tabbar"></main-tab-bar>
   </div>
 </template>
 
 <script>
-import MainTabBar from "./components/context/MainTabBar/MainTabBar.vue";
+import MainTabBar from './components/context/MainTabBar/MainTabBar.vue'
 export default {
-  name: "CoderwhyVueApp",
+  name: 'CoderwhyVueApp',
 
   data() {
-    return {};
+    return {}
   },
 
   mounted() {},
 
   methods: {},
   components: {
-    MainTabBar,
-  },
-};
+    MainTabBar
+  }
+}
 </script>
 
 <style scoped>
-@import url("./assets/css/base.css");
+@import url('./assets/css/base.css');
 </style>

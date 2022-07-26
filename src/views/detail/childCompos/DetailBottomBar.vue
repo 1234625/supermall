@@ -6,7 +6,7 @@
       <div><i class="icon fan"></i><span>收藏</span></div>
     </div>
     <div class="right">
-      <div class="cart" @click="showCart">加入购物车</div>
+      <div class="cart" @click="addToCart">加入购物车</div>
       <div class="buy">购买</div>
     </div>
   </div>
@@ -15,8 +15,8 @@
 export default {
   name: "DetailBottomBar",
   methods: {
-    showCart() {
-      this.$emit("showCart");
+    addToCart() {
+      this.$emit("addCart");
     },
   },
 };
@@ -29,7 +29,7 @@ export default {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 20px;
+  bottom: 0;
 }
 .left {
   width: 50%;
@@ -57,8 +57,8 @@ export default {
   width: 50%;
   display: flex;
   text-align: center;
-  height: 58px;
-  line-height: 58px;
+  height: 49px;
+  line-height: 49px;
 }
 .cart {
   flex: 1;

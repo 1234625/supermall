@@ -118,6 +118,8 @@ export default {
       }
       this.$refs.tabcontrol2.currentIndex = index;
       this.$refs.tabcontrol.currentIndex = index;
+      // 点击列表标题回到头部
+      this.$refs.scroll.scrollto(0, -1000, 200);
     },
     // 判断返回顶部按钮的实现
     scrollp(position) {
@@ -158,7 +160,7 @@ export default {
     },
     datashow() {
       // console.log(this.goods.pop.list);
-      console.log(this.goods);
+      // console.log(this.goods);
     },
   },
   components: {
@@ -184,17 +186,17 @@ export default {
   activated() {
     this.$refs.scroll.scrollto(0, this.positiony);
     this.$refs.scroll.refresh();
-    // console.log(this.positiony);
+    // console.log("activated");
   },
   deactivated() {
     // 监听滚动的Y值
     this.positiony = this.$refs.scroll.getScrollY();
     this.$refs.scroll.refresh();
-    // console.log(this.positiony);
     // 卸载滚动事件
     // this.$refs.scroll.bs.destroy();
     // 卸载事件总线（在离开首页时首页触发deactivated钩子函数）
     this.$bus.$off("itemImageLoad", this.imgLoadListener);
+    // console.log("deactivated");
   },
 };
 </script>
@@ -210,9 +212,10 @@ export default {
   background-color: var(--color-tint);
   color: #fff;
   position: relative;
-  /* left: 0;
+  /* position: fixed;
+  left: 0;
   right: 0;
-  top: 0;  */
+  top: 0; */
   z-index: 11;
 }
 .tabcontrol {
@@ -222,7 +225,6 @@ export default {
 
 .content {
   position: absolute;
-  /* overflow: hidden; */
   top: 44px;
   bottom: 49px;
   left: 0;

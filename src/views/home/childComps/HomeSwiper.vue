@@ -11,22 +11,22 @@
 </template>
 
 <script>
-import { Swiper, SwiperItem } from "components/common/swiper/index.js";
+import { Swiper, SwiperItem } from 'components/common/swiper/index.js'
 export default {
-  name: "CoderwhyVueHomeSwiper",
+  name: 'CoderwhyVueHomeSwiper',
 
   data() {
     return {
-      flag: true,
-    };
+      flag: true
+    }
   },
   props: {
     banners: {
       type: Array,
       default() {
-        return [];
-      },
-    },
+        return []
+      }
+    }
   },
 
   mounted() {},
@@ -34,16 +34,16 @@ export default {
   methods: {
     imgload() {
       if (this.flag) {
-        this.$emit("imgload");
+        this.$emit('imgload')
       }
-      this.flag = false;
-    },
+      this.flag = false
+    }
   },
   components: {
     Swiper,
-    SwiperItem,
-  },
-};
+    SwiperItem
+  }
+}
 </script>
 
 <style scoped></style>
